@@ -2,6 +2,7 @@ package com.example.dataapp;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -21,7 +22,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        String query = "CREATE TABLE " + TABLE_PRODUCTS + "(" + COLUMN_ID + "INTEGER PRIMARY KEY AUTO INCREMENT," + COLUMN_PRODUCT_NAME + "TEXT" + ")";
+        String query = "CREATE TABLE " + TABLE_PRODUCTS + "(" + COLUMN_ID + "INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_PRODUCT_NAME + "TEXT" + ")";
         sqLiteDatabase.execSQL(query);
     }
 
@@ -43,5 +44,22 @@ public class MyDBHandler extends SQLiteOpenHelper {
     public void deteleProduct(String productname){
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL("DELETE FROM " + "TABLE_PRODUCTS" + "WHERE" + COLUMN_PRODUCT_NAME + "=\""+ productname + "\" ; ");
+    }
+
+    public String databaseToString(){
+        String dbString = "";
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "SELECT * FROM " + TABLE_PRODUCTS + "WHERE 1";
+        Cursor c = db.rawQuery(query, null);
+        c.moveToFirst();
+        while(c.isAfterLast()){
+            if (c.getString(c.getColumnIndex("product_name")) != null){
+                dbString = c.getString(c.getColumnIndex("product_name"));
+                dbString+="\n";
+            }
+            c.moveToNext();
+        }
+        db.close();
+        return dbString;
     }
 }
